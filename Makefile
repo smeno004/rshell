@@ -11,9 +11,9 @@ OBJECTS     := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJE
 #Flags
 CFLAGS      := -Wall -Werror -ansi -pedantic
 
-all: bin/rshell.exe
+all: bin/rshell
 
-bin/rshell.exe: bin/rshell.o
+bin/rshell: bin/rshell.o
 	$(CC) $(CFLAGS) -L$(SRCDIR)/ -o $@ $^
 
 $(TARGETDIR)/rshell.o: src/rshell.cpp bin/
