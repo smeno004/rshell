@@ -33,7 +33,7 @@ int main(){
     
     //The following while loop should keep the rshell open until exit is called
     while(userInput != "exit"){
-        cout << "[" << hostname << "@" << username << " ~]$ "; //EXTRA CREDIT STUFF
+        cout << "[" << username << "@" << hostname << "]$ "; //EXTRA CREDIT STUFF
         getline(cin, userInput); // Takes user input
         CommandComposite* temp = new Commands(userInput); // Makes a new Commands object using the userInput
         bool commandType = temp -> parse(); // Parses the userInput and tokenizes it based on whitespaces
