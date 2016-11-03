@@ -60,8 +60,10 @@ class Commands : public CommandComposite {
          while (ind != userInput.size()) {
             //The following code handles commented commands
             if (userInput.at(ind) == '#') {
-               if (userInput.at(ind - 1) == ' ') {
-                  newInput.erase(newInput.find_last_not_of(' ') + 1);
+               if (ind != 0) {
+                  if (userInput.at(ind - 1) == ' ') {
+                     newInput.erase(newInput.find_last_not_of(' ') + 1);
+                  }
                }
                break;
             }

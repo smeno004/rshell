@@ -33,3 +33,4 @@ ls&&ls
 ls;ls
 ls||ls
 ls; echo hello && eco yellow || fail; succeed && mkdir test; sudo -people || ls
+ls; -a

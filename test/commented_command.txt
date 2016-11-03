@@ -1,0 +1,19 @@
+#
+#ls
+ls#
+ls#-a
+ls#-a;
+ls -a#;
+ls # -ir
+# ls # -a # ;
+ls && # || ls
+echo # hello
+hello # echo
+echo yo && echo bye #|| echo lol
+echo yo && # hello
+echo space |#| ls;
+ #
+;#
+&&#
+||#
+################################
