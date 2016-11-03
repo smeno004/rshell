@@ -17,17 +17,31 @@
 
 using namespace std;
 
-class MultiCommand : public ExecCommand{ // strategy class for handling multiple commands or commands that have any form of seperation
+class MultiCommand : public ExecCommand{ 
+   /* strategy class for handling multiple commands or commands 
+      that have any form of seperation */
    protected:
       string path2;
       CommandComposite* cmd;
       const char** argv;
       
    public:
+      /*Constructor with CommandComposite pointer */
       MultiCommand(CommandComposite* com){
          cmd = com;
          argv = new const char*[64];
       }
+      
+      /*
+      Function Name: execute
+      Input Parameters: None
+      Return: void
+      Description: This function takes the CommandComposite* and gets the
+      argument list into the char array argv. Then it executes the command
+      by forking and calling execvp on the separate commands.
+      Certain cases involving connectors and their functionality are also
+      implemented.
+      */
       void execute(){
          vector<CommandComposite*> vec = cmd->getVec();
          // cout << vec.at(vec.size() - 1)->getString() << endl;
@@ -35,46 +49,53 @@ class MultiCommand : public ExecCommand{ // strategy class for handling multiple
          int status;
          int NUM_SIZE = 0;
          
-         int * globvar = (int*)mmap(NULL, sizeof &globvar, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+         /*
+         Creates a variable that is shared across all processes.
+         This helps in accessing flags that indicate when to skip
+         a command based on the execution status of a previous 
+         command (due to presence of a constructor) 
+         */
+         int * globvar = (int*)mmap(NULL, sizeof &globvar, PROT_READ
+                        | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
          *globvar = 0;
          
          pid_t child_pid;
          
          for (unsigned i = 0; i < vec.size(); i++) {
-            if (vec.at(i)->getString() == "&&" || vec.at(i)->getString() == "||" || vec.at(i)->getString() == ";" ) {
-               NUM_SIZE += 1;
+            if (vec.at(i)->getString() == "&&" || 
+                vec.at(i)->getString() == "||" || 
+                vec.at(i)->getString() == ";" ) {
+               NUM_SIZE += 1; //Gets the number of commands to execute
             }
          }
          
-         if (vec.at(vec.size() - 1)->getString() != ";")
-         {
+         if (vec.at(vec.size() - 1)->getString() != ";") {
             NUM_SIZE += 1;
          }
          
          // cout << "NUM_SIZE: " << NUM_SIZE << endl;
          
          // cout << "Vec size: " << vec.size() << endl;
-         for(int i = 0; i < NUM_SIZE; i++){
+         for (int i = 0; i < NUM_SIZE; i++) {
             // cout << i << endl;
-            
             int numCount = 0;
             int argInd = 0;
             unsigned vecInd = 0;
             // cout << i << endl;
+            // cout << "globvar: " << *globvar << endl;
             
-            cout << "globvar: " << *globvar << endl;
-            
-            if (*globvar == 1)
-            {
-               // cout << "hmmm,, I: " << i << endl;
+            //If this flag is set, skip next command
+            if (*globvar == 1) {
                i += 1;
             }
             
-            // cout << "I: " << i << endl;
-            
+            //populates the argument vector with the required argument list
+            //of the present command pointed to by i
             for (vecInd = 0; vecInd < vec.size(); ++vecInd) {
-               if (vec.at(vecInd)->getString() != "&&" && vec.at(vecInd)->getString() != "||" && vec.at(vecInd)->getString() != ";") {
+               if (vec.at(vecInd)->getString() != "&&" &&
+                   vec.at(vecInd)->getString() != "||" && 
+                   vec.at(vecInd)->getString() != ";") {
                   if (numCount == i) {
                      argv[argInd] = vec.at(vecInd)->getString().c_str();
                      ++argInd;
@@ -88,51 +109,13 @@ class MultiCommand : public ExecCommand{ // strategy class for handling multiple
                }
             }
             
-            // if (vecInd == vec.size())
-            // {
-            //    vecInd -= 1;
-            // }
+            child_pid = fork(); //Fork to a child process, to execute command
             
-            // cout << vec.at(vecInd)->getString() << endl;
-            
-            // for (vecInd = 0; vecInd < argInd; ++vecInd)
-            // {
-            //    cout << argv[vecInd] << ' ';
-            // }
-            // cout << endl;
-            
-            
-            
-            // cout << "test: " << vec.at(i)->getString()<<endl;
-            // if (vec.at(i)->getString() == ";" ||
-            //     vec.at(i)->getString() == "&&" ||
-            //     vec.at(i)->getString() == "||"){
-               // const char* cmnd = vec.at(begin)->getString().c_str();
-               // int k = begin;
-               
-               // // cout << begin << ' ' << i << ' ' << (i - begin) << endl;
-               // for(int j = 0; j < (i - begin); j++){
-               //    argv[j] = vec.at(k)->getString().c_str();
-               //    k += 1;
-               // }
-               
-
-               // sleep(1);
-               
-            // cout << "argv[0]: " << argv[0] << endl;
-            // string test = argv[0];
-            // if(test == "exit"){
-            //    exit(0);
-            // }
-            child_pid = fork();
-            
-            if (child_pid < 0)
-            {
-               perror("FORKING FAILED");
-               exit(1);
+            if (child_pid < 0) { // if the fork failed
+               perror("FORKING FAILED"); //print error message
+               exit(1); // exit
             }
-            else if (child_pid == 0)
-            {
+            else if (child_pid == 0) { // 
                //if(execvp(argv[0], (char**)argv) < 0){ // if excepvp fails
                  // cout << "Execvp failed! "<< endl;
                //}
@@ -151,8 +134,7 @@ class MultiCommand : public ExecCommand{ // strategy class for handling multiple
                      perror("EXECVP FAILED");
                      // *globvar = 0;
                   }
-                  else
-                  {
+                  else {
                      *globvar = 1;
                   }
                }
@@ -166,12 +148,15 @@ class MultiCommand : public ExecCommand{ // strategy class for handling multiple
             }
             else {
                //Parent Process
-               for(int i = 0; i < NUM_SIZE; i ++){     
-                  waitpid(child_pid, &status, 0);
+               for (int i = 0; i < NUM_SIZE; i ++) {
+                  //Waits for child process to terminate
+                   waitpid(child_pid, &status, 0); 
                   
-                  if(WIFEXITED(status) && vecInd < vec.size()) {
+                  //Checks exit status of child process to determine flag
+                  if (WIFEXITED(status) && vecInd < vec.size()) {
                      if (WEXITSTATUS(status) > 0) {
-                        if (vec.at(vecInd)->getString() == ";" || vec.at(vecInd)->getString() == "||") {
+                        if (vec.at(vecInd)->getString() == ";" ||
+                            vec.at(vecInd)->getString() == "||") {
                            *globvar = 0;
                         }
                         else if (vec.at(vecInd)->getString() == "&&") {
@@ -184,55 +169,14 @@ class MultiCommand : public ExecCommand{ // strategy class for handling multiple
                         }
                      }
                   }
-                }
-                  
-            }
-            
-            for(int j = 0; j < argInd; j++){
-               argv[j] = '\0';
-            }
-         }
-         
-         //Parent Process
-         
-         // for(int i = 0; i < NUM_SIZE; i ++){     
-         //    waitpid(child_pid, &status, 0);
-         // }
-                  
-         /*The following is to execute it for the last command
-         if (vec.at(vec.size() - 1)->getString() != ";" && child_pid > 0)
-         {
-            const char* cmnd = vec.at(begin)->getString().c_str();
-            int k = begin;
-            // cout << cmnd << endl;
-            
-            // cout << (vec.size() - begin) << endl;
-            
-            for(int j = 0; j < (vec.size() - begin); j++){
-               argv[j] = vec.at(k)->getString().c_str();
-               // cout << argv[j] << endl;
-               k += 1;
-            }
-            
-            child_pid = fork();
-            
-            if (child_pid < 0)
-            {
-               cout << "Forking failed!" << endl;
-               exit(1);
-            }
-            else if (child_pid == 0)
-            {
-               execvp(cmnd, (char**)argv);
-            }
-            else
-            {
-               while (wait(&status) != child_pid){
                }
             }
-         }*/
+            
+            for (int j = 0; j < argInd; j++) { // for the entirety of argv
+                argv[j] = '\0'; //replace each element with null '\0'
+            }
+         }
       }
-      
 };
 
 #endif //__MULTICOMMAND_H__

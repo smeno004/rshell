@@ -2,20 +2,23 @@
 #define __CONNECTORS_H__
 
 #include <vector>
-#include <iostream>
 
 using namespace std;
 
-class Connectors : public CommandComposite{ // Class representing &&, ||, and ;
+class Connectors : public CommandComposite{ /* Class representing &&,
+                                               ||, and ; */
    protected:
-      string connecOper; // The string storing the connector characters
+      string connecOper; /* The string storing the connector characters */
+      
    public:
-      Connectors() : connecOper(NULL) {} //default operator sets string to null
+      Connectors() : connecOper(NULL) {} 
+      /*default operator sets string to null*/
       Connectors(string input) : connecOper(input) {}
+      /*operator with parameter sets connecOper to input*/
       
       string getString() {
-         return connecOper; //returns strings storing the connector
-      }
+         return connecOper;
+      }/*returns strings storing the connector*/
       
       virtual void addElemsToVec(vector<CommandComposite *> &) {}
       /*addElemsToVec is only needed in Commands.h. As a result it is included
@@ -23,13 +26,14 @@ class Connectors : public CommandComposite{ // Class representing &&, ||, and ;
       */
       bool parse() {
          return 1;
-      }
+      }/*return true to show that the parse was successful*/
       
-      vector<CommandComposite*> getVec(){
+      vector<CommandComposite*> getVec() {
          vector<CommandComposite*> vec;
          vec.push_back(this);
          return vec;
-      }
+      }/*Returns a vector of CommandComposite*'s with a single instance
+         of itself */
 };
 
 #endif //__CONNECTORS_H__

@@ -1,0 +1,21 @@
+exit
+exit;
+exit &&
+exit ||
+exit ; exit
+exit && exit
+exit || exit
+ls; exit
+ls && exit
+ls || exit
+eco hello; exit
+eco hello && exit
+echo hello || exit
+ exit
+ exit ;
+ ; exit
+ && exit
+ || exit
+exit ; eco hello
+exit && eco hello
+exit || eco hello

@@ -10,8 +10,13 @@ class ExecCommand{
       string Path2;
       CommandComposite* cmd;
    public:
+      //Default Constructor
       ExecCommand(){}
+      
+      //Constructor which takes a command pointer
       ExecCommand(CommandComposite* command) : cmd(command) {}
+      
+      //pure virtual execute function
       virtual void execute() = 0;
 };
 

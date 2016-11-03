@@ -16,20 +16,20 @@ class CommandComposite{ /*Abstract base class for the composite pattern
       virtual string getString() = 0; 
       /*returns the string the object
         is storing*/
+        
       virtual void addElemsToVec(vector<CommandComposite *> &) = 0; 
       /* Allows us to pass down the parent vector to a newly created Child
          object to copy over the contents of the child's vector into the 
-         parent's vector.
-      */
+         parent's vector.*/
+         
       virtual bool parse() = 0;
       /*Main parsing function, takes in user input, tokenizes it by the
         connectors, creates appropriate objects of type commands, tokens,
-        or connects, and stores them all in an array using addElemsToVec()
-      */
+        or connects, and stores them all in an array using addElemsToVec()*/
+        
       virtual vector<CommandComposite*> getVec() = 0;
       /*Returns a vector storing CommandComposite*'s  which collectively
-        store the userInput in a tokenized string
-      */
+        store the userInput in a tokenized string*/
 };
 
 #endif //__COMMAND_COMPOSITE_H__
