@@ -6,9 +6,9 @@
 
 using namespace std;
 
-class Connectors : public CommandComposite{
+class Connectors : public CommandComposite{ // Class representing &&, ||, and ;
    protected:
-      string connecOper;
+      string connecOper; // The string storing the connector characters
    public:
       Connectors() : connecOper(NULL) {}
       Connectors(string input) : connecOper(input) {}

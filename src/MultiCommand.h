@@ -17,7 +17,7 @@
 
 using namespace std;
 
-class MultiCommand : public ExecCommand{
+class MultiCommand : public ExecCommand{ // strategy class for handling multiple commands or commands that have any form of seperation
    protected:
       string path2;
       CommandComposite* cmd;

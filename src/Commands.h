@@ -10,7 +10,7 @@
 
 class ExecCommand;
 
-class Commands : public CommandComposite {
+class Commands : public CommandComposite { 
    protected:
       string userInput;
       ExecCommand* vec1;
@@ -23,8 +23,7 @@ class Commands : public CommandComposite {
    
       void addElemsToVec(vector<CommandComposite *> &commVec) {
          //cout << "YOLO!" << endl;
-         for (unsigned i = 0; i < vec2.size(); ++i)
-         {
+         for (unsigned i = 0; i < vec2.size(); ++i) {
             // vec2.at(i)->getString();
             // cout << endl;
             commVec.push_back(vec2.at(i));
@@ -43,14 +42,12 @@ class Commands : public CommandComposite {
          while (ind != userInput.size()) {
             // cout << ind << ' ' << endl;
             if (userInput.at(ind) == '#') {
-               if (userInput.at(ind - 1) == ' ')
-               {
+               if (userInput.at(ind - 1) == ' ') {
                   newInput.erase(newInput.find_last_not_of(' ') + 1);
                }
                break;
             }
-            else
-            {
+            else {
                newInput += userInput.at(ind);
             }
             ind++;
@@ -60,8 +57,8 @@ class Commands : public CommandComposite {
          
          // for(int i = 0; i < userInput.size(); i ++){
          unsigned i = 0;
-         while (i != newInput.size() && !semiColon){
-            if(newInput.at(i) == ';'){
+         while (i != newInput.size() && !semiColon) {
+            if (newInput.at(i) == ';') {
                semiColon = true;  
                
                string left = newInput.substr(0, i);
@@ -75,7 +72,7 @@ class Commands : public CommandComposite {
                lComm -> addElemsToVec(vec2);
                vec2.push_back(semi);
                
-               if(i != newInput.size() - 1){
+               if(i != newInput.size() - 1) {
                   string right = newInput.substr(i + 1);
                   CommandComposite* rComm = new Commands(right);
                   // vec2.push_back(rComm);
@@ -95,15 +92,15 @@ class Commands : public CommandComposite {
          //       based on whether it is a token or a connector, make a new token or connector object and pass into vec2
          // }
          i = 0;
-         if(!semiColon){
+         if (!semiColon) {
             int begin = 0;
             bool first = true;
             string tokenOrConnect = newInput;
-            while(i != newInput.size()){
-               if(newInput.at(i) == ' '){
+            while (i != newInput.size()) {
+               if (newInput.at(i) == ' ') {
                   tokenOrConnect = newInput.substr(begin, i - begin);
-                  if(tokenOrConnect != ""){
-                     if (tokenOrConnect == "&&" || tokenOrConnect == "||"){
+                  if (tokenOrConnect != "") {
+                     if (tokenOrConnect == "&&" || tokenOrConnect == "||") {
                         // cout << tokenOrConnect << endl;
                         // cout << "\ti: " << i << " \tbegin: " << begin << endl;
                         CommandComposite * connect = new Connectors(tokenOrConnect);
@@ -113,7 +110,7 @@ class Commands : public CommandComposite {
                         first = true;
                      }
                      else {
-                        if(first){
+                        if (first) {
                            //create a new function object
                            CommandComposite* funcns = new Functions(tokenOrConnect);
                            first = false;
@@ -162,7 +159,7 @@ class Commands : public CommandComposite {
       
       string getString(){
          string temp;
-         for(unsigned i  = 0; i < vec2.size(); i++){
+         for (unsigned i  = 0; i < vec2.size(); i++){
             temp += vec2.at(i)->getString();
          }
          return temp;
