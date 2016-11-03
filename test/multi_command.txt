@@ -1,0 +1,35 @@
+ls;
+ls; ls
+ls; echo hello
+ls && ls
+ls || ls
+ls || ls && ls
+ls && ls || ls
+echo hello && ls
+ls && echo hello
+eco hello && ls
+eco hello || ls
+eco hello; ls
+eco hello && ls; echo test
+eco hello || ls; echo test
+eco hello; ls && echo test
+eco hello; ls || echo test
+ ; 
+ &&
+ ||
+echo hello || && echo test
+echo hello && || echo test
+echo hello || || echo test
+echo hello && && echo test
+echo hello ; ; echo test
+echo test ;; echo hello
+; ls ;
+&& ls &&
+|| ls ||
+mkdir test || mkdir test
+mkdir test && mkdir test
+mkdir test; mkdir test
+ls&&ls
+ls;ls
+ls||ls
+ls; echo hello && eco yellow || fail; succeed && mkdir test; sudo -people || ls
