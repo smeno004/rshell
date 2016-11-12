@@ -47,6 +47,7 @@ class SingleCommand : public ExecCommand {
                ++argInd;
             }
          }
+         argv[argInd] = '\0';
          
          //Exits the shell
          if (cmd->getString() == "exit") { //checks to see if userInput is "exit"

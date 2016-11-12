@@ -31,7 +31,7 @@ int main(){
         getline(cin, userInput); // Takes user input
         CommandComposite* temp = new Commands(userInput); // Makes a new Commands object using the userInput
         bool commandType = temp -> parse(); // Parses the userInput and tokenizes it based on whitespaces
-        cout << temp->getString() << endl;
+        
         if(commandType){
             // If command is a multicommand, run the strategy for multicommands
             if (temp->getVec().at(0)->getString() == "(") {

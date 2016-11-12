@@ -119,6 +119,7 @@ class MultiCommand : public ExecCommand{
                   // ++begInd;
                }
             }
+            argv[argInd] = '\0';
             
             if (vec.at(vecInd - 1)->getString() == "exit") {
                exitStatus = true;
