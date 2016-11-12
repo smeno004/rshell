@@ -1,0 +1,87 @@
+test
+test -e
+test -d
+test -f
+test -e -f
+test -e -d
+test -d -f
+test -e -d -f
+
+test filename
+test src
+test README.md
+
+test -e filename
+test -e src
+test -e README.md
+
+test -d filename
+test -d src
+test -d README.md
+
+test -f filename
+test -f src
+test -f README.md
+
+test -e -f filename
+test -e -f src
+test -e -f README.md
+
+test -e -d filename
+test -e -d src
+test -e -d README.md
+
+test -d -f filename
+test -d -f src
+test -d -f README.md
+
+test -e -d -f filename
+test -e -d -f src
+test -e -d -f README.md
+
+
+
+
+
+[ ]
+[ -e ]
+[ -d ]
+[ -f ]
+[ -e -f ]
+[ -e -d ]
+[ -d -f ]
+[ -e -d -f ]
+
+[ filename ]
+[ src ]
+[ README.md ]
+
+[ -e filename ]
+[ -e src ]
+[ -e README.md ]
+
+[ -d filename ]
+[ -d src ]
+[ -d README.md ]
+
+[ -f filename ]
+[ -f src ]
+[ -f README.md ]
+
+[ -e -f filename ]
+[ -e -f src ]
+[ -e -f README.md ]
+
+[ -e -d filename ]
+[ -e -d src ]
+[ -e -d README.md ]
+
+[ -d -f filename ]
+[ -d -f src ]
+[ -d -f README.md ]
+
+[ -e -d -f filename ]
+[ -e -d -f src ]
+[ -e -d -f README.md ] 
+
+//need to fill in multicommand tests

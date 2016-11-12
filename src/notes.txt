@@ -1,7 +1,2 @@
-for cmd1 || cmd2
-  || works for when cmd1 fails (it runs cmd2 as desired), however if cmd1 succees, cmd2 is still run.
-  essentially, || is being treated like ; ----------------- I BELIEVE THIS IS NOW FIXED, STILL NEED TO TEST IT MORE - SID
-  
-Calling exit loops backwards through the input string outputing every command until it reaches the beginning, then exits...
-  - Actually not sure if thats how it works, there is some sort of relationship between the amount of exit calls necessary to actually exit and how many command
-    were previously called
+First time through, test -e exits entire program. Any time after is ok. (we fixed this but kinda a ghost bug, not sure why it was only happening
+for test -e before...)

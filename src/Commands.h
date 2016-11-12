@@ -54,6 +54,7 @@ class Commands : public CommandComposite {
          //cout << userInput << endl;
          bool semiColon = false; //flag for if semicolor exists in userInput
          bool multi = false; //flag for multicommand or single command - gets returned
+         string noCommentInput;
          string newInput;
          
          unsigned ind = 0;
@@ -62,13 +63,32 @@ class Commands : public CommandComposite {
             if (userInput.at(ind) == '#') {
                if (ind != 0) {
                   if (userInput.at(ind - 1) == ' ') {
-                     newInput.erase(newInput.find_last_not_of(' ') + 1);
+                     noCommentInput.erase(noCommentInput.find_last_not_of(' ') + 1);
                   }
                }
                break;
             }
             else {
-               newInput += userInput.at(ind);
+               noCommentInput += userInput.at(ind);
+            }
+            ind++;
+         }
+         
+         ind = 0;
+         // string openParens = ")";
+         // string closeParens = "(";
+         while (ind != noCommentInput.size()) {
+            if (noCommentInput.at(ind) == '(') {
+               newInput += noCommentInput.at(ind);
+               newInput += " ";
+            }
+            else if (noCommentInput.at(ind) == ')') {
+               newInput += " ";
+               newInput += noCommentInput.at(ind);
+            }
+            else
+            {
+               newInput += noCommentInput.at(ind);
             }
             ind++;
          }
@@ -119,6 +139,8 @@ class Commands : public CommandComposite {
             int begin = 0;
             bool first = true;
             string tokenOrConnect = newInput;
+            
+            newInput.erase(newInput.find_last_not_of(' ') + 1);
             
             while (i != newInput.size()) {
                if (newInput.at(i) == ' ') {
@@ -199,6 +221,10 @@ class Commands : public CommandComposite {
       */
       vector<CommandComposite*> getVec() {
          return vec2;
+      }
+      
+      string getUserInput(){
+         return userInput;
       }
 };
 

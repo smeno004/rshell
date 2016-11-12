@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <unistd.h>
-#include <sys/types.h> 
-#include <sys/wait.h> 
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <stdio.h>
 #include <sys/mman.h>
@@ -24,12 +24,18 @@ class MultiCommand : public ExecCommand{
       string path2;
       CommandComposite* cmd;
       const char** argv;
+      bool exitStatus;
       
    public:
       /*Constructor with CommandComposite pointer */
       MultiCommand(CommandComposite* com){
          cmd = com;
          argv = new const char*[64];
+         exitStatus = false;
+      }
+      
+      bool getExitStatus() {
+         return exitStatus;
       }
       
       /*
@@ -48,7 +54,7 @@ class MultiCommand : public ExecCommand{
          // int begin = 0;
          int status;
          int NUM_SIZE = 0;
-         
+
          /*
          Creates a variable that is shared across all processes.
          This helps in accessing flags that indicate when to skip
@@ -75,19 +81,23 @@ class MultiCommand : public ExecCommand{
          }
          
          // cout << "NUM_SIZE: " << NUM_SIZE << endl;
-         
          // cout << "Vec size: " << vec.size() << endl;
          for (int i = 0; i < NUM_SIZE; i++) {
             // cout << i << endl;
             int numCount = 0;
             int argInd = 0;
             unsigned vecInd = 0;
+            // unsigned begInd = 0;
             // cout << i << endl;
             // cout << "globvar: " << *globvar << endl;
             
             //If this flag is set, skip next command
             if (*globvar == 1) {
                i += 1;
+            }
+            
+            if (i == NUM_SIZE) {
+               return;
             }
             
             //populates the argument vector with the required argument list
@@ -106,8 +116,64 @@ class MultiCommand : public ExecCommand{
                   if (numCount == (i + 1)) {
                      break;
                   }
+                  // ++begInd;
                }
             }
+            
+            if (vec.at(vecInd - 1)->getString() == "exit") {
+               exitStatus = true;
+               return;
+            }
+            
+            if(vec.at(vecInd - argInd)->getString() == "test" || vec.at(vecInd - argInd)->getString() == "[" ) {
+               string inputString = "";
+               string openBracket = "[";
+               string closeBracket = "]";
+               
+               for (int j = 0; j < argInd; j++) {
+                  if (vec.at(vecInd - argInd + j)->getString() == openBracket) {
+                     inputString += "test";
+                     inputString += " ";
+                  }
+                  
+                  else if (vec.at(vecInd - argInd + j)->getString() == closeBracket.c_str()) {
+                  }
+                  
+                  else {
+                     inputString += argv[j];
+                     inputString += " ";
+                  }
+               }
+               
+               Test* test = new Test(inputString);
+               
+               int testExecute = test->execute();
+               
+               if (vecInd == vec.size()) {
+                  *globvar = 0;
+               }
+               else if(testExecute == 1 && vec.at(vecInd)->getString() == "&&"){
+                  *globvar = 1;
+               }
+               else if(testExecute == 0 && vec.at(vecInd)->getString() == "||"){
+                  *globvar = 1;
+               }
+               else{
+                  *globvar = 0;
+               }
+               
+               for (int j = 0; j < argInd; j++) { // for the entirety of argv
+                argv[j] = '\0'; //replace each element with null '\0'
+               }
+               
+               continue; // Continues to next iteration of the outer for loop
+            }
+         
+            /*string testComm = "test";
+            
+            if (argv[0] == testComm.c_str()){
+               cout << "Found a test mofos" << endl;
+            }*/
             
             child_pid = fork(); //Fork to a child process, to execute command
             
@@ -115,13 +181,14 @@ class MultiCommand : public ExecCommand{
                perror("FORKING FAILED"); //print error message
                exit(1); // exit
             }
-            else if (child_pid == 0) { // 
+            else if (child_pid == 0) { // child process
                //if(execvp(argv[0], (char**)argv) < 0){ // if excepvp fails
                  // cout << "Execvp failed! "<< endl;
                //}
                /*if(connector = ';'){
                   
                }*/
+               
                if (vecInd == vec.size() || vec.at(vecInd)->getString() == ";") {
                   // cout << "SEMICOLON or END!" << endl;
                   if (execvp(argv[0], (char**)argv) < 0) {

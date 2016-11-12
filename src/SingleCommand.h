@@ -3,13 +3,16 @@
 
 #include <cstdlib>
 #include <unistd.h>
-#include <sys/wait.h> 
+#include <sys/wait.h>
+#include "Test.h"
 
 class SingleCommand : public ExecCommand {
    protected:
       string path2;
       CommandComposite* cmd;
       const char** argv;
+      bool exitStatus;
+      
    public:
    
       //Constructor which takes in CommandComposite*
@@ -17,6 +20,7 @@ class SingleCommand : public ExecCommand {
       SingleCommand(CommandComposite* com) {
          cmd = com;
          argv = new const char*[64];
+         exitStatus = false;
       }
       
       /*
@@ -30,21 +34,52 @@ class SingleCommand : public ExecCommand {
       void execute() {
          int status;
          pid_t child_pid;
+         int argInd = 0;
          
          //Gets the vector of CommandComposite leaf objects
          vector<CommandComposite*> vec = cmd->getVec();
          const char* cmnd = vec.at(0)->getString().c_str();
          
          //Populates argv with the required argument list 
-         for (unsigned i = 0; i< vec.size(); i++) {
+         for (unsigned i = 0; i < vec.size(); i++) {
             if (vec.at(i)->getString() != ";") {
                argv[i] = vec.at(i)->getString().c_str();
+               ++argInd;
             }
          }
          
          //Exits the shell
-         if (cmd->getString() == "exit") {
-            exit(1);
+         if (cmd->getString() == "exit") { //checks to see if userInput is "exit"
+            exitStatus = true; // sets bool variable exit status to true
+            return; /* return statement exits from execute function preventing
+                       "exit" command from being passed into execvp */
+         }
+         
+         if(cmd->getString().substr(0,4) == "test" || cmd->getString().substr(0,1) == "["){
+            
+            string inputString = "";
+            string openBracket = "[";
+            string closeBracket = "]";
+            
+            for (int j = 0; j < argInd; j++) {
+               if (vec.at(j)->getString() == openBracket) {
+                  inputString += "test";
+                  inputString += " ";
+               }
+               
+               else if (vec.at(j)->getString() == closeBracket.c_str()) {
+               }
+               
+               else {
+                  inputString += argv[j];
+                  inputString += " ";
+               }
+            }
+            
+            Test* test = new Test(inputString);
+            test->execute();
+            return; /* return statement exits from execute function preventing
+                       "test" command from being passed into execvp */
          }
          
          if (cmd->getString() == "") { //If user enters empty string (aka \n)
@@ -63,6 +98,14 @@ class SingleCommand : public ExecCommand {
             }
          }   
          waitpid(child_pid, &status, 0); //waits for child process to terminate
+         
+         for (int j = 0; j < argInd; j++) { // for the entirety of argv
+                argv[j] = '\0'; //replace each element with null '\0'
+         }
+      }
+      
+      bool getExitStatus(){
+         return exitStatus;
       }
 };
 

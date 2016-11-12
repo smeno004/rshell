@@ -30,6 +30,8 @@ class CommandComposite{ /*Abstract base class for the composite pattern
       virtual vector<CommandComposite*> getVec() = 0;
       /*Returns a vector storing CommandComposite*'s  which collectively
         store the userInput in a tokenized string*/
+      
+      virtual string getUserInput() = 0;
 };
 
 #endif //__COMMAND_COMPOSITE_H__

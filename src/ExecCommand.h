@@ -16,6 +16,8 @@ class ExecCommand{
       //Constructor which takes a command pointer
       ExecCommand(CommandComposite* command) : cmd(command) {}
       
+      virtual bool getExitStatus() = 0;
+      
       //pure virtual execute function
       virtual void execute() = 0;
 };

@@ -36,6 +36,10 @@ class Parameters : public Tokens{ /* Leaf class that inherits from Tokens
          return vec;
       }/*Returns a vector of CommandComposite*'s with a single instance
          of itself */
+         
+      string getUserInput(){
+         return param;
+      }
 };
 
 #endif
