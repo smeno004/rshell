@@ -1,0 +1,8 @@
+(ls) || test README.md && ls
+ls || (test README.md) && ls
+ls || test README.md && (ls)
+(ls || test README.md) && ls
+ls || (test README.md && ls)
+
+echo A || (echo B && lsa) || ls
+echo A && (echo B && lsa) || ls

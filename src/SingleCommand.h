@@ -31,7 +31,7 @@ class SingleCommand : public ExecCommand {
       argument list into the char array argv. Then it executes the command
       by forking and calling execvp.
       */
-      void execute() {
+      bool execute() {
          int status;
          pid_t child_pid;
          int argInd = 0;
@@ -52,7 +52,7 @@ class SingleCommand : public ExecCommand {
          //Exits the shell
          if (cmd->getString() == "exit") { //checks to see if userInput is "exit"
             exitStatus = true; // sets bool variable exit status to true
-            return; /* return statement exits from execute function preventing
+            return true; /* return statement exits from execute function preventing
                        "exit" command from being passed into execvp */
          }
          
@@ -78,13 +78,12 @@ class SingleCommand : public ExecCommand {
             }
             
             Test* test = new Test(inputString);
-            test->execute();
-            return; /* return statement exits from execute function preventing
+            return !(test->execute()); /* return statement exits from execute function preventing
                        "test" command from being passed into execvp */
          }
          
          if (cmd->getString() == "") { //If user enters empty string (aka \n)
-            return; //return, output nothing, prompts user again
+            return true; //return, output nothing, prompts user again
          }         
          
          child_pid = fork(); //Forks Parent process to a child process
@@ -95,7 +94,8 @@ class SingleCommand : public ExecCommand {
          else if (child_pid == 0) {
             if (execvp(cmnd, (char**)argv) < 0) {
                perror("EXECVP FAILED"); //error for when execvp fails
-               exit(1);
+               return false;
+               //exit(1);
             }
          }   
          waitpid(child_pid, &status, 0); //waits for child process to terminate
@@ -103,6 +103,8 @@ class SingleCommand : public ExecCommand {
          for (int j = 0; j < argInd; j++) { // for the entirety of argv
                 argv[j] = '\0'; //replace each element with null '\0'
          }
+         
+         return true;
       }
       
       bool getExitStatus(){

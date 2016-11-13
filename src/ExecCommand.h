@@ -19,7 +19,7 @@ class ExecCommand{
       virtual bool getExitStatus() = 0;
       
       //pure virtual execute function
-      virtual void execute() = 0;
+      virtual bool execute() = 0;
 };
 
 #endif //__EXECCOMMAND_H__

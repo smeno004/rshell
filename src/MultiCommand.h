@@ -48,7 +48,7 @@ class MultiCommand : public ExecCommand{
       Certain cases involving connectors and their functionality are also
       implemented.
       */
-      void execute(){
+      bool execute(){
          vector<CommandComposite*> vec = cmd->getVec();
          // cout << vec.at(vec.size() - 1)->getString() << endl;
          // int begin = 0;
@@ -87,6 +87,8 @@ class MultiCommand : public ExecCommand{
             int numCount = 0;
             int argInd = 0;
             unsigned vecInd = 0;
+            int prevConn = 0; // 0 - ;, 1 - &&, 2 - ||
+            
             // unsigned begInd = 0;
             // cout << i << endl;
             // cout << "globvar: " << *globvar << endl;
@@ -97,7 +99,7 @@ class MultiCommand : public ExecCommand{
             }
             
             if (i == NUM_SIZE) {
-               return;
+               break;
             }
             
             //populates the argument vector with the required argument list
@@ -113,6 +115,19 @@ class MultiCommand : public ExecCommand{
                }
                else {
                   numCount += 1;
+                  
+                  if (numCount == i - 1) {
+                     if (vec.at(vecInd)->getString() == ";") {
+                        prevConn = 0;
+                     }
+                     else if (vec.at(vecInd)->getString() == "&&") {
+                        prevConn = 1;
+                     }
+                     else if (vec.at(vecInd)->getString() == "||") {
+                        prevConn = 2;
+                     }
+                  }
+                  
                   if (numCount == (i + 1)) {
                      break;
                   }
@@ -121,9 +136,21 @@ class MultiCommand : public ExecCommand{
             }
             argv[argInd] = '\0';
             
+            if(*globvar == 1) {
+               if (vec.at(vecInd - argInd - 1)->getString() == "&&" && prevConn == 1) {
+                  continue;
+               }
+               else if (vec.at(vecInd - argInd - 1)->getString() == "||" && prevConn == 2) {
+                  continue;
+               }
+               else {
+                  *globvar = 0;
+               }
+            }
+            
             if (vec.at(vecInd - 1)->getString() == "exit") {
                exitStatus = true;
-               return;
+               return true;
             }
             
             if(vec.at(vecInd - argInd)->getString() == "test" || vec.at(vecInd - argInd)->getString() == "[" ) {
@@ -173,7 +200,7 @@ class MultiCommand : public ExecCommand{
             /*string testComm = "test";
             
             if (argv[0] == testComm.c_str()){
-               cout << "Found a test mofos" << endl;
+               cout << "Found a test " << endl;
             }*/
             
             child_pid = fork(); //Fork to a child process, to execute command
@@ -194,13 +221,11 @@ class MultiCommand : public ExecCommand{
                   // cout << "SEMICOLON or END!" << endl;
                   if (execvp(argv[0], (char**)argv) < 0) {
                      perror("EXECVP FAILED");
-                     exit(2);
                   }
                }
                else if (vec.at(vecInd)->getString() == "||") {
                   if (execvp(argv[0], (char**)argv) < 0) {
                      perror("EXECVP FAILED");
-                     // *globvar = 0;
                   }
                   else {
                      *globvar = 1;
@@ -228,6 +253,7 @@ class MultiCommand : public ExecCommand{
                            *globvar = 0;
                         }
                         else if (vec.at(vecInd)->getString() == "&&") {
+                           //cout << "Failed" << endl;
                            *globvar = 1;
                         }
                      }
@@ -244,6 +270,33 @@ class MultiCommand : public ExecCommand{
                 argv[j] = '\0'; //replace each element with null '\0'
             }
          }
+         
+         unsigned i = vec.size() - 1;
+         while(vec.at(i)->getString() != "&&" &&
+               vec.at(i)->getString() != "||" &&
+               vec.at(i)->getString() != ";"){
+                  i--;
+               } // grabs last connector in the command
+         
+         if (*globvar == 1) {
+            if (vec.at(i)->getString() == "&&") {
+               return false;
+            }
+            else {
+               return true;
+            }
+         }
+         else {
+            if (vec.at(i)->getString() == "&&" ||
+                vec.at(i)->getString() == ";") {
+               return true;
+            }
+            else {
+               return false;
+            }
+         }
+         
+         return true;
       }
 };
 
