@@ -32,6 +32,10 @@ class Functions : public Tokens{
          return vec;
       }/*Returns a vector of CommandComposite*'s with a single instance
          of itself */
+         
+      virtual string getUserInput() {
+         return func;
+      }
 };
 
 #endif

@@ -31,6 +31,10 @@ class Tokens : public CommandComposite{
          return vec;
       }/*Returns a vector of CommandComposite*'s with a single instance
          of itself */
+         
+      virtual string getUserInput() {
+         return funcTex;
+      }
 };
 
 #endif //__TOKENS_H__

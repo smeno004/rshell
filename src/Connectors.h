@@ -34,6 +34,10 @@ class Connectors : public CommandComposite{ /* Class representing &&,
          return vec;
       }/*Returns a vector of CommandComposite*'s with a single instance
          of itself */
+         
+      virtual string getUserInput() {
+         return connecOper;
+      }
 };
 
 #endif //__CONNECTORS_H__

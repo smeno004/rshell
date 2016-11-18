@@ -12,6 +12,8 @@
 #include "ExecCommand.h"
 #include "SingleCommand.h"
 #include "MultiCommand.h"
+#include "Test.h"
+#include "ParensCommand.h"
 
 using namespace std;
 
@@ -22,14 +24,6 @@ int main(){
     gethostname(hostname, 1024);
     passwd *pw = getpwuid(getuid());
     string username = pw->pw_name;
-    userInput = " ";
-    /* fgets(charUserInput, 64, stdin);
-    cin >> setw(64) >> charUserInput;
-    cout << charUserInput[3] << endl;
-    gets(charUserInput);
-    int i = userInput.size();
-    char * charUserInput = &userInput[0];
-    charUserInput[i] = '\0'; */
     
     //The following while loop should keep the rshell open until exit is called
     while(userInput != "exit"){
@@ -37,20 +31,37 @@ int main(){
         getline(cin, userInput); // Takes user input
         CommandComposite* temp = new Commands(userInput); // Makes a new Commands object using the userInput
         bool commandType = temp -> parse(); // Parses the userInput and tokenizes it based on whitespaces
-        if(commandType){
+        bool parensType = false;
+        
+        for(unsigned i = 0 ; i < userInput.size(); i++) {
+            if (userInput.at(i) == '(') {
+                parensType = true;
+            }    
+        }
+        
+        if (parensType) {
+            ExecCommand * parensObj = new ParensCommand(temp);
+            parensObj->execute();
+            if (parensObj->getExitStatus()) {
+                return 0;
+            }
+        }
+        else if (commandType) {
             // If command is a multicommand, run the strategy for multicommands
             ExecCommand* multiComm = new MultiCommand(temp); 
-            multiComm->execute(); 
+            multiComm->execute();
+            if(multiComm->getExitStatus()) {
+                return 0;
+            }
         }
-        else{
+        else if(!commandType) {
             // If command is a single command, run the strategy for single commands
             ExecCommand* singleComm = new SingleCommand(temp);
             singleComm->execute();
+            if(singleComm->getExitStatus()) {
+                return 0;
+            }
         }
-        /* cout << temp->getString();
-        cout << endl;
-        cout << "[" << hostname << "@" << username << " ~]$ ";
-        getline(cin, userInput);*/
     }
     return 0;
 }
