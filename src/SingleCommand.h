@@ -12,6 +12,7 @@ class SingleCommand : public ExecCommand {
       CommandComposite* cmd;
       const char** argv;
       bool exitStatus;
+      bool execStatus;
       
    public:
    
@@ -21,12 +22,13 @@ class SingleCommand : public ExecCommand {
          cmd = com;
          argv = new const char*[64];
          exitStatus = false;
+         execStatus = true;
       }
       
       /*
       Function Name: execute
       Input Parameters: None
-      Return: void
+      Return: bool
       Description: This function takes the CommandComposite* and gets the
       argument list into the char array argv. Then it executes the command
       by forking and calling execvp.
@@ -52,12 +54,18 @@ class SingleCommand : public ExecCommand {
          //Exits the shell
          if (cmd->getString() == "exit") { //checks to see if userInput is "exit"
             exitStatus = true; // sets bool variable exit status to true
-            return true; /* return statement exits from execute function preventing
+            
+            execStatus = true;
+            
+            //return;
+            return true; 
+            /* return statement exits from execute function preventing
                        "exit" command from being passed into execvp */
          }
          
-         if(cmd->getString().substr(0,4) == "test" || cmd->getString().substr(0,1) == "["){
-            
+         // check for test commands
+         if(cmd->getString().substr(0,4) == "test" || 
+            cmd->getString().substr(0,1) == "["){
             string inputString = "";
             string openBracket = "[";
             string closeBracket = "]";
@@ -67,10 +75,7 @@ class SingleCommand : public ExecCommand {
                   inputString += "test";
                   inputString += " ";
                }
-               
-               else if (vec.at(j)->getString() == closeBracket.c_str()) {
-               }
-               
+               else if (vec.at(j)->getString() == closeBracket.c_str()) {}
                else {
                   inputString += argv[j];
                   inputString += " ";
@@ -78,15 +83,30 @@ class SingleCommand : public ExecCommand {
             }
             
             Test* test = new Test(inputString);
-            return !(test->execute()); /* return statement exits from execute function preventing
+            
+            int testExec = test->execute();
+            
+            if (testExec == 0) {
+               execStatus = true;
+            }
+            else {
+               execStatus = false;
+            }
+            
+            return execStatus;
+            //return !(test->execute()); 
+            /* return statement exits from execute function preventing
                        "test" command from being passed into execvp */
          }
          
          if (cmd->getString() == "") { //If user enters empty string (aka \n)
+            execStatus = true;
+            //return;
             return true; //return, output nothing, prompts user again
          }         
          
          child_pid = fork(); //Forks Parent process to a child process
+         
          if (child_pid < 0) {
             perror("FORKING FAILED"); //error for when forking fails
             exit(1);
@@ -94,8 +114,10 @@ class SingleCommand : public ExecCommand {
          else if (child_pid == 0) {
             if (execvp(cmnd, (char**)argv) < 0) {
                perror("EXECVP FAILED"); //error for when execvp fails
-               return false;
-               //exit(1);
+               
+               execStatus = false;
+               //return false;
+               exit(1);
             }
          }   
          waitpid(child_pid, &status, 0); //waits for child process to terminate
@@ -104,11 +126,23 @@ class SingleCommand : public ExecCommand {
                 argv[j] = '\0'; //replace each element with null '\0'
          }
          
-         return true;
+         // execStatus = true;
+         if (execStatus) {
+            return true;
+         }
+         else {
+            return false;
+         }
+         // return;
+         //return true;
       }
       
-      bool getExitStatus(){
+      bool getExitStatus() {
          return exitStatus;
+      }
+      
+      bool getExecStatus() {
+         return execStatus;
       }
 };
 

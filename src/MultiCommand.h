@@ -25,6 +25,7 @@ class MultiCommand : public ExecCommand{
       CommandComposite* cmd;
       const char** argv;
       bool exitStatus;
+      bool execStatus;
       
    public:
       /*Constructor with CommandComposite pointer */
@@ -36,6 +37,10 @@ class MultiCommand : public ExecCommand{
       
       bool getExitStatus() {
          return exitStatus;
+      }
+      
+      bool getExecStatus() {
+         return execStatus;
       }
       
       /*
@@ -50,6 +55,12 @@ class MultiCommand : public ExecCommand{
       */
       bool execute(){
          vector<CommandComposite*> vec = cmd->getVec();
+         
+         if (vec.size() == 0) {
+            cout << "NO COMMANDS SPECIFIED" << endl;
+            execStatus = false;
+            return false;
+         }
          // cout << vec.at(vec.size() - 1)->getString() << endl;
          // int begin = 0;
          int status;
@@ -67,6 +78,10 @@ class MultiCommand : public ExecCommand{
          *globvar = 0;
          
          pid_t child_pid;
+         
+         // if (vec.size() == 1 && vec.at(0)->getString() == ";") {
+         //    return true;
+         // }
          
          for (unsigned i = 0; i < vec.size(); i++) {
             if (vec.at(i)->getString() == "&&" || 
@@ -98,7 +113,7 @@ class MultiCommand : public ExecCommand{
                i += 1;
             }
             
-            if (i == NUM_SIZE) {
+            if (i >= NUM_SIZE) {
                break;
             }
             
@@ -137,10 +152,12 @@ class MultiCommand : public ExecCommand{
             argv[argInd] = '\0';
             
             if(*globvar == 1) {
-               if (vec.at(vecInd - argInd - 1)->getString() == "&&" && prevConn == 1) {
+               if (vec.at(vecInd - argInd - 1)->getString() == "&&" && 
+                  prevConn == 1) {
                   continue;
                }
-               else if (vec.at(vecInd - argInd - 1)->getString() == "||" && prevConn == 2) {
+               else if (vec.at(vecInd - argInd - 1)->getString() == "||" && 
+                        prevConn == 2) {
                   continue;
                }
                else {
@@ -150,10 +167,14 @@ class MultiCommand : public ExecCommand{
             
             if (vec.at(vecInd - 1)->getString() == "exit") {
                exitStatus = true;
+               
+               execStatus = true;
+               //return;
                return true;
             }
             
-            if(vec.at(vecInd - argInd)->getString() == "test" || vec.at(vecInd - argInd)->getString() == "[" ) {
+            if(vec.at(vecInd - argInd)->getString() == "test" || 
+               vec.at(vecInd - argInd)->getString() == "[" ) {
                string inputString = "";
                string openBracket = "[";
                string closeBracket = "]";
@@ -164,7 +185,8 @@ class MultiCommand : public ExecCommand{
                      inputString += " ";
                   }
                   
-                  else if (vec.at(vecInd - argInd + j)->getString() == closeBracket.c_str()) {
+                  else if (vec.at(vecInd - argInd + j)->getString() == 
+                           closeBracket.c_str()) {
                   }
                   
                   else {
@@ -180,10 +202,12 @@ class MultiCommand : public ExecCommand{
                if (vecInd == vec.size()) {
                   *globvar = 0;
                }
-               else if(testExecute == 1 && vec.at(vecInd)->getString() == "&&"){
+               else if (testExecute == 1 && 
+                        vec.at(vecInd)->getString() == "&&"){
                   *globvar = 1;
                }
-               else if(testExecute == 0 && vec.at(vecInd)->getString() == "||"){
+               else if (testExecute == 0 && 
+                        vec.at(vecInd)->getString() == "||"){
                   *globvar = 1;
                }
                else{
@@ -191,7 +215,7 @@ class MultiCommand : public ExecCommand{
                }
                
                for (int j = 0; j < argInd; j++) { // for the entirety of argv
-                argv[j] = '\0'; //replace each element with null '\0'
+                  argv[j] = '\0'; //replace each element with null '\0'
                }
                
                continue; // Continues to next iteration of the outer for loop
@@ -217,15 +241,18 @@ class MultiCommand : public ExecCommand{
                   
                }*/
                
-               if (vecInd == vec.size() || vec.at(vecInd)->getString() == ";") {
+               if (vecInd == vec.size() || 
+                   vec.at(vecInd)->getString() == ";") {
                   // cout << "SEMICOLON or END!" << endl;
                   if (execvp(argv[0], (char**)argv) < 0) {
                      perror("EXECVP FAILED");
+                     exit(1);
                   }
                }
                else if (vec.at(vecInd)->getString() == "||") {
                   if (execvp(argv[0], (char**)argv) < 0) {
                      perror("EXECVP FAILED");
+                     exit(1);
                   }
                   else {
                      *globvar = 1;
@@ -236,6 +263,7 @@ class MultiCommand : public ExecCommand{
                   if (execvp(argv[0], (char**)argv) < 0) {
                      perror("EXECVP FAILED");
                      *globvar = 1;
+                     exit(1);
                   }
                }
             }
@@ -280,23 +308,40 @@ class MultiCommand : public ExecCommand{
          
          if (*globvar == 1) {
             if (vec.at(i)->getString() == "&&") {
-               return false;
+               execStatus = false;
+               //return;
+               // return false;
             }
             else {
-               return true;
+               execStatus = true;
+               //return;
+               // return true;
             }
          }
          else {
             if (vec.at(i)->getString() == "&&" ||
                 vec.at(i)->getString() == ";") {
-               return true;
+               execStatus = true;
+               //return;
+               // return true;
             }
             else {
-               return false;
+               execStatus = false;
+               //return;
+               // return false;
             }
          }
          
-         return true;
+         // execStatus = true;
+         
+         if (execStatus) {
+            return true;
+         }
+         else {
+            return false;
+         }
+         // return;
+         //return true;
       }
 };
 

@@ -1,3 +1,18 @@
+(ls)
+(echo A)
+(fail)
+(echo A && ls)
+(ls || echo A)
+(ls && echo A)
+(ls; echo A)
+(ls || echo A); ls -a
+(ls && echo A) || ls
+(ls) || (ls)
+(ls || ls) && (ls || echo hello)
+(echo hello && test) || ls -a && (ls || test)
+ls || (exit && test || exit && echo hello || exit)
+(echo hello || echo no && test) && ls && echo A || (fail && lol)
+
 (ls) || test README.md && ls
 ls || (test README.md) && ls
 ls || test README.md && (ls)
@@ -5,4 +20,4 @@ ls || test README.md && (ls)
 ls || (test README.md && ls)
 
 echo A || (echo B && lsa) || ls
-echo A && (echo B && lsa) || ls
+echo A && (echo B && lsa) || 

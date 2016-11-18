@@ -9,7 +9,7 @@ ls; exit
 ls && exit
 ls || exit
 eco hello; exit
-eco hello && exit
+eco hello && exits
 echo hello || exit
  exit
  exit ;
@@ -19,3 +19,8 @@ echo hello || exit
 exit ; eco hello
 exit && eco hello
 exit || eco hello
+
+test || exit && exit
+test && lsa || exit
+
+(lsa && exit) || (eixt || exit)

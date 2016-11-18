@@ -7,35 +7,48 @@ commands it can accept are infinite (within the maximum amount of char character
 readable in one line). Rshell comes with user recognition, printing out both
 username and machine name before the ``$`` prompt.
 
+**Update v 1.1** allows users to have precednece to thier commands, meaning that 
+users can specify the precednece of the returns of their commands. For Example,
+the command `echo A && echo B || echo C && echo D` will print out:
+
+ >A <br>
+ >B <br>
+ >D <br>
+ 
+However, with precednece, the command `(echo A && echo B) || (echo C && echo D)`
+will print out:
+
+>A <br>
+>B <br>
+
+This update also adds functionality to the `test` command. The result of the
+test command call now outputs the result of the test as either
+
+>(True) <br>
+
+or
+
+>(False) <br>
+
 ###Bugs
 #####Below is a list of known bugs, tread with caution:
-* There is no significant error checking for simply entering connectors 
-  without any tokens (commands and parameters)
-    * solely entering connectors such as ``&&`` without any other characters 
-      results in an out of range error for a vector as seen below.
-      ``[ubuntu@andre_castro-cs_private-1980025]$ &&#
-        terminate called after throwing an instance of 'std::out_of_range'
-        what():  vector::_M_range_check
-        Aborted
-      ``
-    * This may possibly be fixed by adding a check to the incrementation of the 
-      variable ```c++ NUM_SIZE += 1;``` to only increment if the last element 
-      is not a connector.
-      ```c++
-        if (vec.at(vec.size() - 1)->getString() != ";") {
-            NUM_SIZE += 1;
-        }```
-* Space between command and ';' causes error for multicommands.
-* exit does not seem to work with multicommands yet. It does not get recognized
-  as a valid command. However, exit works with the single command implementation.
-  For example:
-  ``[ubuntu@andre_castro-cs_private-1980025]$ exit; ls
-    EXECVP FAILED: No such file or directory
-    Makefile  README.md  a.out  bin  hw2  src  test
-    [ubuntu@andre_castro-cs_private-1980025]$ 
-  ``
-* At certain times, when various commands are executed in the shell, multiple
-  single exit commands seem to be required to exit out of the shell.
-* In hammer, ls doest not appear to work. Upon calling ls, the following error
-  message is output: ``ls: cannot access P6▒: No such file or directory``. The 
-  ls command works just fine in other IDE's without any error messages.
+* For the test command, when using the [] square brackets, if no space is 
+  typed between the first opening bracket and the filepath rather than 
+  returning an error, spaces are inserted to make the test command still run.
+    *For exmaple, the call `[filepath]` where "filepath" does not exist, 
+     returns
+
+     > (False): No such file or directory <br>
+     
+     when it should return
+     
+     > [filepath]: command not found
+
+* When parentheses are used, if no connector is used following the parenthases
+  like in the command `(ls || echo A) ls  -a`, vector out of range is thrown.
+* For the command `lsa && ls && ls || ls -a`, ls -a does not print when it 
+  should, we are not completely sure why :(
+* `ls && && &&` throws a vector out of range error while commands like 
+  `ls || ; &&` do not.
+* Simply inputting a single open parenthasee `(` will call a string out of 
+   range.

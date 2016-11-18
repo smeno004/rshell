@@ -24,7 +24,6 @@ int main(){
     gethostname(hostname, 1024);
     passwd *pw = getpwuid(getuid());
     string username = pw->pw_name;
-    userInput = " ";
     
     //The following while loop should keep the rshell open until exit is called
     while(userInput != "exit"){
@@ -34,7 +33,6 @@ int main(){
         bool commandType = temp -> parse(); // Parses the userInput and tokenizes it based on whitespaces
         bool parensType = false;
         
-        //string parensOpen = "(";
         for(unsigned i = 0 ; i < userInput.size(); i++) {
             if (userInput.at(i) == '(') {
                 parensType = true;
@@ -52,7 +50,7 @@ int main(){
             // If command is a multicommand, run the strategy for multicommands
             ExecCommand* multiComm = new MultiCommand(temp); 
             multiComm->execute();
-            if(multiComm->getExitStatus()){
+            if(multiComm->getExitStatus()) {
                 return 0;
             }
         }
@@ -60,15 +58,10 @@ int main(){
             // If command is a single command, run the strategy for single commands
             ExecCommand* singleComm = new SingleCommand(temp);
             singleComm->execute();
-            if(singleComm->getExitStatus()){
+            if(singleComm->getExitStatus()) {
                 return 0;
             }
         }
-        
-        /* cout << temp->getString();
-        cout << endl;
-        cout << "[" << hostname << "@" << username << " ~]$ ";
-        getline(cin, userInput);*/
     }
     return 0;
 }
