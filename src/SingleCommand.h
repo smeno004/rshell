@@ -5,6 +5,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "Test.h"
+#include "BaseCommand.h"
+#include "cdCommand.h"
+#include <errno.h>
 
 class SingleCommand : public ExecCommand {
    protected:
@@ -63,6 +66,34 @@ class SingleCommand : public ExecCommand {
                        "exit" command from being passed into execvp */
          }
          
+         if (cmd->getString().substr(0,2) == "cd" && vec.at(0)->getString() == "cd") {
+            string input;
+            for (int j = 0; j < argInd; j++) {
+               input += argv[j];
+               input += " ";
+            }
+            
+            BaseCommand * cdComm = new cd(input);
+            
+            int cdExec = cdComm->execute();
+            
+            if (cdExec == 0) {
+               execStatus = true;
+            }
+            else {
+               execStatus = false;
+            }
+            
+            return execStatus;
+         }
+         
+         if (cmd->getString().substr(0,2) == "cd" && vec.at(0)->getString() != "cd") {
+            execStatus = false;
+            errno = EIO;
+            perror("Command does not exist");
+            return execStatus;
+         }
+         
          // check for test commands
          if(cmd->getString().substr(0,4) == "test" || 
             cmd->getString().substr(0,1) == "["){
@@ -82,7 +113,7 @@ class SingleCommand : public ExecCommand {
                }
             }
             
-            Test* test = new Test(inputString);
+            BaseCommand* test = new Test(inputString);
             
             int testExec = test->execute();
             

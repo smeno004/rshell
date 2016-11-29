@@ -1,0 +1,75 @@
+cd
+cd -
+cd PATH
+cd .
+cd ..
+cd bin
+cd ../bin
+cd ./bin
+cd ../.
+cd ../src
+cd ../../Bash
+cd .././../bin
+cd ../../Bash/.././Bash/src
+cd ../../../../
+cd ./././././
+cd ../../../CS\ 100
+cd ../../../CD\ 100/./Bash
+
+cd ............
+cd ////////////
+cd /././././\/\/.\
+cd fail
+cd test/test/
+cd /p/p/p/p
+cd - - - - - 
+cd --
+cd --/.
+cd -/.
+cd ../-
+cd ../-/.
+cd ./-/..
+cd -/-/-/-
+cd ./.../.....///
+cd .\.\.\.\.\
+cd .\/.\/.\/.\/.\/.\/.
+cd /..\/..\/..\/..\/..\/../
+
+cd cd
+cd - cd
+cd .-
+cd .-.
+cd .--.
+cd ..-..
+cd ..--..
+cd ..-/-..
+cd ../-/-/..
+cd ./-/.
+cd ./\.--./\.
+
+cd && ls
+cd . && ls
+cd PATH && ls
+cd || ls
+cd . || ls
+cd PATH || ls
+
+cd . $$ ls
+cd .. $$ ls
+cd bin $$ ls
+cd ../bin $$ ls
+cd ./bin $$ ls
+cd ../. $$ ls
+cd ../src $$ ls
+cd ../../Bash $$ ls
+cd .././../bin $$ ls
+
+cd . || ls
+cd .. || ls
+cd bin || ls
+cd ../bin || ls
+cd ./bin || ls
+cd ../. || ls
+cd ../src || ls
+cd ../../Bash || ls
+cd .././../bin || ls

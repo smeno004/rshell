@@ -172,6 +172,7 @@ class Commands : public CommandComposite {
             }
             ++i;
          }
+         
          i = 0;
          //If the command/sub-command is a single-command/has no semicolon
          //parse the single command/command with && or ||
