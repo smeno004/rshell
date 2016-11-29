@@ -173,6 +173,39 @@ class MultiCommand : public ExecCommand{
                return true;
             }
             
+            if (vec.at(vecInd - argInd)->getString() == "cd") {
+               string input;
+               for (int j = 0; j < argInd; j++) {
+                  input += argv[j];
+                  input += " ";
+               }
+               
+               BaseCommand * cdComm = new cd(input);
+               
+               int cdExec = cdComm->execute();
+               
+               if (vecInd == vec.size()) {
+                  *globvar = 0;
+               }
+               else if (cdExec == 1 && 
+                        vec.at(vecInd)->getString() == "&&"){
+                  *globvar = 1;
+               }
+               else if (cdExec == 0 && 
+                        vec.at(vecInd)->getString() == "||"){
+                  *globvar = 1;
+               }
+               else{
+                  *globvar = 0;
+               }
+               
+               for (int j = 0; j < argInd; j++) { // for the entirety of argv
+                  argv[j] = '\0'; //replace each element with null '\0'
+               }
+               
+               continue; // Continues to next iteration of the outer for loop
+            }
+            
             if(vec.at(vecInd - argInd)->getString() == "test" || 
                vec.at(vecInd - argInd)->getString() == "[" ) {
                string inputString = "";

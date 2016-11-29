@@ -30,6 +30,21 @@ or
 
 >(False) <br>
 
+**Update v 1.2** Rshell now accepts commands of the type
+* `cd <Path>`
+* `cd`
+* `cd -`
+
+cd PATH changes the directory to the specified path, assuming the path is valid.
+If it is not, then an error is thrown.
+
+cd changes current working directory to the home directory
+
+cd - changes current working directory to the previous working directory
+
+Together the cd commands grants the user full control of thier directory
+movement!:)
+
 ###Bugs
 #####Below is a list of known bugs, tread with caution:
 * When parentheses are used, if no connector is used following the parentheses

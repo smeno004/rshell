@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <iomanip>
@@ -12,7 +13,9 @@
 #include "ExecCommand.h"
 #include "SingleCommand.h"
 #include "MultiCommand.h"
+#include "BaseCommand.h"
 #include "Test.h"
+#include "cdCommand.h"
 #include "ParensCommand.h"
 
 using namespace std;
@@ -27,8 +30,13 @@ int main(){
     
     //The following while loop should keep the rshell open until exit is called
     while(userInput != "exit"){
-        cout << "[" << username << "@" << hostname << "]$ "; //EXTRA CREDIT STUFF
+        cout << "[" << username << "@" << hostname << "]:" << getenv("PWD") << " $ "; //EXTRA CREDIT STUFF
         getline(cin, userInput); // Takes user input
+        
+        if (userInput.find_first_not_of(' ') == std::string::npos) {
+            continue;
+        }
+        
         CommandComposite* temp = new Commands(userInput); // Makes a new Commands object using the userInput
         bool commandType = temp -> parse(); // Parses the userInput and tokenizes it based on whitespaces
         bool parensType = false;
@@ -38,6 +46,11 @@ int main(){
                 parensType = true;
             }    
         }
+        
+        // if (temp->getVec().at(0)->getString() == "cd") {
+        //     BaseCommand * cdObj = new cd(userInput);
+        //     cdObj->execute();
+        // }
         
         if (parensType) {
             ExecCommand * parensObj = new ParensCommand(temp);
